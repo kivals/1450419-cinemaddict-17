@@ -1,6 +1,6 @@
 import { createElement } from '../../render';
 
-export default class FilmListView {
+export default class MovieListView {
   getTemplate() {
     return `
       <section class="films-list"></section>
