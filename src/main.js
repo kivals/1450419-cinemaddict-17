@@ -2,14 +2,20 @@ import ProfileView from './view/profile.view';
 import { render } from './render';
 import NavigationView from './view/navigation.view';
 import SortView from './view/sort.view';
-import FilmsPresenter from './presenter/films.presenter';
+import MoviePresenter from './presenter/movie.presenter';
+import MovieModel from './model/movie.model';
+import CommentModel from './model/comment.model';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-const filmsPresenter = new FilmsPresenter();
+
+const commentModel = new CommentModel();
+const moviesModel = new MovieModel(commentModel);
+
+const moviePresenter = new MoviePresenter();
 
 render(new ProfileView(), siteHeaderElement);
 render(new NavigationView(), siteMainElement);
 render(new SortView(), siteMainElement);
 
-filmsPresenter.init(siteMainElement);
+moviePresenter.init(siteMainElement, moviesModel);
