@@ -2,6 +2,7 @@ import MovieContainerView from '../view/movie/movie-container.view';
 import { render } from '../render';
 import MovieListView from '../view/movie/movie-list.view';
 import MovieCardView from '../view/movie/movie-card.view';
+import MoviePopupView from '../view/movie/movie-popup.view';
 
 export default class MoviePresenter {
   movieContainer = new MovieContainerView();
@@ -17,7 +18,18 @@ export default class MoviePresenter {
     render(this.movieList, this.movieContainer.getElement());
 
     this.movies.forEach((movie) => {
-      render(new MovieCardView(movie), this.movieContainer.getElement());
+      this.renderMovie(movie);
     });
   }
+
+  renderMovie = (movie) => {
+    const movieCardComp = new MovieCardView(movie);
+
+    movieCardComp.getElement().addEventListener('click', () => {
+      const moviePopupComp = new MoviePopupView(movie);
+      moviePopupComp.showPopup();
+    });
+    render(movieCardComp, this.movieContainer.getElement());
+  };
+
 }

@@ -7,7 +7,7 @@ export default class MovieCardView {
   }
 
   getTemplate() {
-    const { title, totalRating, release, genre, runtime, description, comments } = this.movie;
+    const { title, totalRating, release, poster, genre, runtime, description, comments } = this.movie;
 
     const releaseYear = release.date ?
       humanizeDate(this.movie.release.date, 'YYYY') : '';
@@ -24,7 +24,7 @@ export default class MovieCardView {
               <span class="film-card__duration">${duration}</span>
               <span class="film-card__genre">${genre}</span>
             </p>
-            <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
+            <img src="${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>

@@ -15,7 +15,7 @@ export default class MovieModel {
       const movieCommentsIds = [];
 
       if (comments.length !== 0) {
-        const countComments = getRandomInteger(0, 100);
+        const countComments = getRandomInteger(0, 10);
 
         for (let i = 0; i < countComments; i++) {
           const ranIndex = getRandomInteger(0, comments.length - 1);

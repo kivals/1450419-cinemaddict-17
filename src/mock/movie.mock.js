@@ -1,13 +1,24 @@
-import {getRandomInteger} from '../common/utils';
+import {getRandomInteger, getRandomValueFromArray} from '../common/utils';
+
+const posters = [
+  'made-for-each-other.png',
+  'popeye-meets-sinbad.png',
+  'sagebrush-trail.jpg',
+  'santa-claus-conquers-the-martians.jpg',
+  'the-dance-of-life.jpg',
+  'the-great-flamarion.jpg',
+  'the-man-with-the-golden-arm.jpg',
+];
 
 const generateRuntime = () => getRandomInteger(10, 380);
 const generateTotalRating = () => getRandomInteger(1, 10, 0.1);
+const generatePoster = () => (`images/posters/${getRandomValueFromArray(posters)}`);
 
 export const generateMovie = () => ({
   title: 'A Little Pony Without The Carpet',
   alternativeTitle: 'Laziness Who Sold Themselves',
   totalRating: generateTotalRating(),
-  poster: 'images/posters/blue-blazes.jpg',
+  poster: generatePoster(),
   ageRating: 0,
   director: 'Tom Ford',
   writers: ['Takeshi Kitano'],
@@ -18,7 +29,9 @@ export const generateMovie = () => ({
   },
   runtime: generateRuntime(),
   genre: [
-    'Comedy'
+    'Comedy',
+    'Fights',
+    'Horror'
   ],
   description: 'Oscar-winning movie, a war drama about two young people, from the creators of timeless classic "Nu, Pogodi!" and "Alice in Wonderland", with the best fight scenes since Bruce Lee.'
 });
