@@ -4,7 +4,7 @@
   "private": true,
   "description": "Проект «Киноман» от HTML Academy",
   "browserslist": [
-    "last 2 versions",
+    "last 10 versions",
     "not dead",
     "not ie <= 11",
     "not op_mini all",

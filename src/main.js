@@ -12,10 +12,10 @@ const siteMainElement = document.querySelector('.main');
 const commentModel = new CommentModel();
 const moviesModel = new MovieModel(commentModel);
 
-const moviePresenter = new MoviePresenter();
+const moviePresenter = new MoviePresenter(siteMainElement, moviesModel);
 
 render(new ProfileView(), siteHeaderElement);
 render(new NavigationView(), siteMainElement);
 render(new SortView(), siteMainElement);
 
-moviePresenter.init(siteMainElement, moviesModel);
+moviePresenter.init();
