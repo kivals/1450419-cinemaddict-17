@@ -28,7 +28,7 @@ export default class MovieModel {
    * @returns объект, описывающий фильм с набором комметариев в виде id
    */
   #mergeMoviesAndComments() {
-    const movies = Array.from({length: 9}, generateMovie);
+    const movies = Array.from({length: 12}, generateMovie);
     const comments = [...this.#commentModel.getComments()];
 
     return movies.map((movie) => {
