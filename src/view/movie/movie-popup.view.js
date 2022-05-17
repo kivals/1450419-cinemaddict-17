@@ -5,11 +5,9 @@ export default class MoviePopupView {
   static #isShow = false;
   #element = null;
   #movie;
-  #comments;
 
-  constructor(movie, comments) {
+  constructor(movie) {
     this.#movie = movie;
-    this.#comments = comments;
 
     this.#render();
     this.#initEventListeners();
@@ -178,7 +176,7 @@ export default class MoviePopupView {
    * @returns разметка с комментариями
    */
   #renderComments() {
-    return this.#comments.map((comment) => {
+    return this.#movie.comments.map((comment) => {
       const commentDate = humanizeDate(comment.date, 'YYYY/MM/DD');
       return `
       <li class="film-details__comment">
