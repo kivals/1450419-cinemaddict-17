@@ -1,5 +1,6 @@
 import MovieContainerView from '../view/movie/movie-container.view';
 import { render } from '../render';
+import { render as newRender } from '../framework/render';
 import MovieListView from '../view/movie/movie-list.view';
 
 export default class MoviePresenter {
@@ -24,7 +25,7 @@ export default class MoviePresenter {
       comments: this.#movieModel.getMovieComments(movie.comments)
     }));
     const movieListComp = new MovieListView(moviesData);
-    render(this.#movieContainerComp, this.#movieContainer);
-    render(movieListComp, this.#movieContainerComp.getElement());
+    newRender(this.#movieContainerComp, this.#movieContainer);
+    // render(movieListComp, this.#movieContainerComp.getElement());
   }
 }

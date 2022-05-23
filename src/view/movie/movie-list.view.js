@@ -1,4 +1,5 @@
 import {createElement, render, RenderPosition} from '../../render';
+import { render as newRender} from '../../framework/render';
 import MovieShowMoreBtnView from './movie-show-more-btn.view';
 import {NoMovieView} from './no-movie.view';
 import MovieCardView from './movie-card.view';
