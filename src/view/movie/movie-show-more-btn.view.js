@@ -1,15 +1,24 @@
 import AbstractView from '../../framework/view/abstract-view';
 
-const createShowMoreBtnTemplate = () => `
-    <ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
-    </ul>
-`;
+const createShowMoreBtnTemplate = () => '<button class="films-list__show-more">Show more</button>';
 
 export default class MovieShowMoreBtnView extends AbstractView {
   get template() {
     return createShowMoreBtnTemplate();
   }
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
+
+  removeElement() {
+    this.element.remove();
+    super.removeElement();
+  }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

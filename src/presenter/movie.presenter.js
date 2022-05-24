@@ -1,16 +1,16 @@
 import MovieContainerView from '../view/movie/movie-container.view';
-import { render } from '../render';
-import { render as newRender } from '../framework/render';
-import MovieListView from '../view/movie/movie-list.view';
+import { render } from '../framework/render';
+import { MovieEmptyListView } from '../view/movie/movie-empty-list.view';
+import { MovieListView } from '../view/movie/movie-list.view';
 
 export default class MoviePresenter {
   #movieContainerComp = new MovieContainerView();
-  #movieContainer = null;
+  #moviesWrapperHtml = null;
   #movieModel = null;
   #movieList = [];
 
-  constructor(movieContainer, movieModel) {
-    this.#movieContainer = movieContainer;
+  constructor(moviesWrapperHtml, movieModel) {
+    this.#moviesWrapperHtml = moviesWrapperHtml;
     this.#movieModel = movieModel;
   }
 
@@ -24,8 +24,10 @@ export default class MoviePresenter {
       ...movie,
       comments: this.#movieModel.getMovieComments(movie.comments)
     }));
-    const movieListComp = new MovieListView(moviesData);
-    newRender(this.#movieContainerComp, this.#movieContainer);
-    // render(movieListComp, this.#movieContainerComp.getElement());
+    const movieListComp = !moviesData.length ?
+      new MovieEmptyListView() : new MovieListView(moviesData);
+
+    render(this.#movieContainerComp, this.#moviesWrapperHtml);
+    render(movieListComp, this.#movieContainerComp.element);
   }
 }
