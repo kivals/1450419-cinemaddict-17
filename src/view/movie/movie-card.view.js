@@ -1,20 +1,15 @@
-import { createElement } from '../../render';
 import {convertMinutesToHours, humanizeDate} from '../../common/utils';
+import AbstractView from '../../framework/view/abstract-view';
 
-export default class MovieCardView {
-  constructor(movie) {
-    this.movie = movie;
-  }
+const createCardTemplate = (movie) => {
+  const { title, totalRating, release, poster, genre, runtime, description, comments } = movie;
 
-  getTemplate() {
-    const { title, totalRating, release, poster, genre, runtime, description, comments } = this.movie;
+  const releaseYear = release.date ?
+    humanizeDate(movie.release.date, 'YYYY') : '';
 
-    const releaseYear = release.date ?
-      humanizeDate(this.movie.release.date, 'YYYY') : '';
+  const duration = convertMinutesToHours(Number(runtime));
 
-    const duration = convertMinutesToHours(Number(runtime));
-
-    return `
+  return `
       <article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
@@ -35,17 +30,26 @@ export default class MovieCardView {
           </div>
         </article>
     `;
+};
+
+export default class MovieCardView extends AbstractView {
+  #movie = [];
+  constructor(movie) {
+    super();
+    this.#movie = movie;
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
+  get template() {
+    return createCardTemplate(this.#movie);
   }
 
-  removeElement() {
-    this.element = null;
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

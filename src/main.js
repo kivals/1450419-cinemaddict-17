@@ -1,5 +1,5 @@
 import ProfileView from './view/profile.view';
-import { render } from './render';
+import { render } from './framework/render';
 import NavigationView from './view/navigation.view';
 import SortView from './view/sort.view';
 import MoviePresenter from './presenter/movie.presenter';
@@ -17,5 +17,4 @@ const moviePresenter = new MoviePresenter(siteMainElement, moviesModel);
 render(new ProfileView(), siteHeaderElement);
 render(new NavigationView(), siteMainElement);
 render(new SortView(), siteMainElement);
-
 moviePresenter.init();

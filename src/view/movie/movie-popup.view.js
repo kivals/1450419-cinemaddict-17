@@ -1,52 +1,24 @@
-import {createElement} from '../../render';
-import {convertMinutesToHours, humanizeDate} from '../../common/utils';
+import { convertMinutesToHours, humanizeDate } from '../../common/utils';
+import AbstractView from '../../framework/view/abstract-view';
 
-export default class MoviePopupView {
-  static #isShow = false;
-  #element = null;
-  #movie;
+const createPopupTemplate = (movie) => {
+  const {
+    title,
+    alternativeTitle,
+    totalRating,
+    director,
+    writers,
+    actors,
+    poster,
+    genres,
+    description,
+    releaseDate,
+    duration,
+    comments
+  } = movie;
 
-  constructor(movie) {
-    this.#movie = movie;
 
-    this.#render();
-    this.#initEventListeners();
-  }
-
-  showPopup() {
-    if (!MoviePopupView.#isShow) {
-      document.body.append(this.#element);
-      document.body.classList.toggle('hide-overflow');
-      MoviePopupView.#isShow = true;
-    }
-  }
-
-  #render() {
-    if (!this.#element) {
-      this.#element = createElement(this.#getTemplate());
-    }
-  }
-
-  #getTemplate() {
-    const {
-      title,
-      alternativeTitle,
-      totalRating,
-      director,
-      writers,
-      actors,
-      poster,
-      release,
-      genre,
-      runtime,
-      description,
-    } = this.#movie;
-
-    const releaseDate = release.date ?
-      humanizeDate(release.date, 'DD MMMM YYYY') : '';
-    const duration = convertMinutesToHours(Number(runtime));
-
-    return `
+  return `
       <section class="film-details">
         <form class="film-details__inner" action="" method="get">
           <div class="film-details__top-container">
@@ -100,7 +72,7 @@ export default class MoviePopupView {
                   <tr class="film-details__row">
                     <td class="film-details__term">Genres</td>
                     <td class="film-details__cell">
-                      ${this.#renderGenres(genre)}
+                      ${genres}
                     </td>
                   </tr>
                 </table>
@@ -123,7 +95,7 @@ export default class MoviePopupView {
               <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
 
               <ul class="film-details__comments-list">
-                ${this.#renderComments()}
+                ${comments}
               </ul>
 
               <div class="film-details__new-comment">
@@ -160,22 +132,55 @@ export default class MoviePopupView {
         </form>
       </section>
     `;
+};
+
+export default class MoviePopupView extends AbstractView {
+  static #isShow = false;
+  #movie = null;
+
+  constructor(movie) {
+    super();
+    this.#movie = movie;
+    this.#initEventListeners();
+  }
+
+  get template() {
+    const releaseDate = this.#movie.release.date ?
+      humanizeDate(this.#movie.release.date, 'DD MMMM YYYY') : '';
+    const duration = convertMinutesToHours(Number(this.#movie.runtime));
+    const genres = this.#getGenresTemplate();
+    const comments = this.#getCommentsTemplate();
+
+    return createPopupTemplate({
+      ...this.#movie,
+      releaseDate,
+      duration,
+      genres,
+      comments,
+    });
+  }
+
+  showPopup() {
+    if (!MoviePopupView.#isShow) {
+      document.body.append(this.element);
+      document.body.classList.toggle('hide-overflow');
+      MoviePopupView.#isShow = true;
+    }
   }
 
   /**
    * Отрисовать блок с жанрами
-   * @param genres список жанров
    * @returns разметка с жанрами
    */
-  #renderGenres(genres) {
-    return genres.map((genre) => (`<span class="film-details__genre">${genre}</span>`)).join('');
+  #getGenresTemplate() {
+    return this.#movie.genre.map((genre) => (`<span class="film-details__genre">${genre}</span>`)).join('');
   }
 
   /**
    * Отрисовать блок комментариев
    * @returns разметка с комментариями
    */
-  #renderComments() {
+  #getCommentsTemplate() {
     return this.#movie.comments.map((comment) => {
       const commentDate = humanizeDate(comment.date, 'YYYY/MM/DD');
       return `
@@ -197,7 +202,7 @@ export default class MoviePopupView {
   }
 
   #initEventListeners() {
-    this.#element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopup);
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopup);
     document.addEventListener('keydown', this.#onEscKeydown);
   }
 
@@ -215,7 +220,7 @@ export default class MoviePopupView {
   };
 
   #removeElement() {
-    this.#element.remove();
-    this.#element = null;
+    this.element.remove();
+    super.removeElement();
   }
 }
