@@ -1,15 +1,26 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const createSortTemplate = () => `
+const createSortItemTemplate = (sortName) =>
+  `<li><a href="#" class="sort__button">${sortName}</a></li>`;
+
+const createSortTemplate = (sortList) => {
+  const sortItemsTemplate = sortList.map(createSortItemTemplate).join('');
+
+  return `
     <ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
-    </ul>
-`;
+      ${sortItemsTemplate}
+    </ul>`;
+};
 
 export default class SortView extends AbstractView {
+  #sortList = null;
+
+  constructor(sortList) {
+    super();
+    this.#sortList = sortList;
+  }
+
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#sortList);
   }
 }

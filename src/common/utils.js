@@ -24,3 +24,5 @@ export const convertMinutesToHours = (minutes) => {
 
   return hours ? `${hours}h ${min}m` : `${min}m`;
 };
+
+export const toUpperCaseFirstLetter = (string) => string[0].toUpperCase() + string.slice(1);
