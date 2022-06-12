@@ -1,4 +1,9 @@
-import {getRandomInteger, getRandomValueFromArray} from '../common/utils';
+import {
+  getRandomBoolean,
+  getRandomInteger,
+  getRandomValueFromArray
+} from '../common/utils';
+import {nanoid} from 'nanoid';
 
 const posters = [
   'made-for-each-other.png',
@@ -15,6 +20,7 @@ const generateTotalRating = () => getRandomInteger(1, 10, 0.1);
 const generatePoster = () => (`images/posters/${getRandomValueFromArray(posters)}`);
 
 export const generateMovie = () => ({
+  id: nanoid(),
   title: 'A Little Pony Without The Carpet',
   alternativeTitle: 'Laziness Who Sold Themselves',
   totalRating: generateTotalRating(),
@@ -33,5 +39,11 @@ export const generateMovie = () => ({
     'Fights',
     'Horror'
   ],
-  description: 'Oscar-winning movie, a war drama about two young people, from the creators of timeless classic "Nu, Pogodi!" and "Alice in Wonderland", with the best fight scenes since Bruce Lee.'
+  description: 'Oscar-winning movie, a war drama about two young people, from the creators of timeless classic "Nu, Pogodi!" and "Alice in Wonderland", with the best fight scenes since Bruce Lee.',
+  userDetails: {
+    watchlist: getRandomBoolean(),
+    alreadyWatched: getRandomBoolean(),
+    watchingDate: '2019-04-12T16:12:32.554Z',
+    favorite: getRandomBoolean()
+  }
 });

@@ -14,7 +14,8 @@ const createPopupTemplate = (movie) => {
     description,
     releaseDate,
     duration,
-    comments
+    comments,
+    userDetailsButtons
   } = movie;
 
 
@@ -84,9 +85,7 @@ const createPopupTemplate = (movie) => {
             </div>
 
             <section class="film-details__controls">
-              <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-              <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-              <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+                ${userDetailsButtons}
             </section>
           </div>
 
@@ -137,10 +136,13 @@ const createPopupTemplate = (movie) => {
 export default class MoviePopupView extends AbstractView {
   static #isShow = false;
   #movie = null;
+  #comments = null;
 
-  constructor(movie) {
+  constructor(movie, comments) {
+    console.log('create Popup');
     super();
     this.#movie = movie;
+    this.#comments = comments;
     this.#initEventListeners();
   }
 
@@ -150,6 +152,7 @@ export default class MoviePopupView extends AbstractView {
     const duration = convertMinutesToHours(Number(this.#movie.runtime));
     const genres = this.#getGenresTemplate();
     const comments = this.#getCommentsTemplate();
+    const userDetailsButtons = this.#getUserDetailsButtons();
 
     return createPopupTemplate({
       ...this.#movie,
@@ -157,6 +160,7 @@ export default class MoviePopupView extends AbstractView {
       duration,
       genres,
       comments,
+      userDetailsButtons,
     });
   }
 
@@ -164,6 +168,7 @@ export default class MoviePopupView extends AbstractView {
     if (!MoviePopupView.#isShow) {
       document.body.append(this.element);
       document.body.classList.toggle('hide-overflow');
+      this.#initEventListeners();
       MoviePopupView.#isShow = true;
     }
   }
@@ -176,12 +181,23 @@ export default class MoviePopupView extends AbstractView {
     return this.#movie.genre.map((genre) => (`<span class="film-details__genre">${genre}</span>`)).join('');
   }
 
+  #getUserDetailsButtons() {
+    const addToWatchlistBtn =
+      `<button type="button" class="film-details__control-button film-details__control-button--watchlist ${this.#movie.userDetails?.watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>`;
+    const alreadyWatchBtn =
+      `<button type="button" class="film-details__control-button film-details__control-button--watched ${this.#movie.userDetails?.alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>`;
+    const addToFavoritesBtn =
+      `<button type="button" class="film-details__control-button film-details__control-button--favorite ${this.#movie.userDetails?.favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>`;
+
+    return [addToWatchlistBtn, alreadyWatchBtn, addToFavoritesBtn].join('');
+  }
+
   /**
    * Отрисовать блок комментариев
    * @returns разметка с комментариями
    */
   #getCommentsTemplate() {
-    return this.#movie.comments.map((comment) => {
+    return this.#comments.map((comment) => {
       const commentDate = humanizeDate(comment.date, 'YYYY/MM/DD');
       return `
       <li class="film-details__comment">
@@ -206,6 +222,37 @@ export default class MoviePopupView extends AbstractView {
     document.addEventListener('keydown', this.#onEscKeydown);
   }
 
+  setAddToWatchlistHandler = (callback) => {
+    console.log('setWatchlist');
+    this._callback.addToWatchlist = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#addToWatchListHandler);
+  };
+
+  setAlreadyWatchedHandler = (callback) => {
+    this._callback.alreadyWatched = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#alreadyWatchedHandler);
+  };
+
+  setAddToFavoriteHandler = (callback) => {
+    this._callback.addToFavorite = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#addToFavoriteHandler);
+  };
+
+  #addToWatchListHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.addToWatchlist();
+  };
+
+  #alreadyWatchedHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.alreadyWatched();
+  };
+
+  #addToFavoriteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.addToFavorite();
+  };
+
   #onEscKeydown = (event) => {
     if (event.code === 'Escape') {
       this.#closePopup();
@@ -213,10 +260,10 @@ export default class MoviePopupView extends AbstractView {
   };
 
   #closePopup = () => {
+    document.body.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this.#onEscKeydown);
     this.#removeElement();
     MoviePopupView.#isShow = false;
-    document.body.classList.toggle('hide-overflow');
-    document.removeEventListener('keydown', this.#onEscKeydown);
   };
 
   #removeElement() {
