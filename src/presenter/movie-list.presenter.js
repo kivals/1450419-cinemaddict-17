@@ -6,7 +6,7 @@ import {MovieListView} from '../view/movie/movie-list.view';
 import {MoviePresenter} from './movie.presenter';
 import {MoviesContainerView} from '../view/movie/movies-container.view';
 import MovieShowMoreBtnView from '../view/movie/movie-show-more-btn.view';
-import {updateItem} from "../common/utils";
+import {updateItem} from '../common/utils';
 
 const MOVIE_COUNT_PER_STEP = 5;
 

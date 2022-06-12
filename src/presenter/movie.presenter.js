@@ -74,14 +74,14 @@ export class MoviePresenter {
     document.body.classList.remove('hide-overflow');
     this.#moviePopupComp.removeElement();
     MoviePopupView.isShow = false;
-  }
+  };
 
   #onEscKeydown = (evt) => {
     evt.preventDefault();
     if (evt.code === 'Escape') {
       this.#onPopupClose();
     }
-  }
+  };
 
   #onWatchlistClick = () => {
     const userDetails = {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist };
