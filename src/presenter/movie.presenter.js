@@ -18,7 +18,6 @@ export class MoviePresenter {
   }
 
   init(movie, comments) {
-    console.log('init');
     this.#movie = movie;
     this.#comments = comments;
 
@@ -28,20 +27,13 @@ export class MoviePresenter {
     this.#movieCardComp = new MovieCardView(movie);
     this.#moviePopupComp = new MoviePopupView(movie, comments);
 
-    this.#movieCardComp.setOpenPopupHandler(this.#onPopupShow);
-    this.#movieCardComp.setAddToWatchlistHandler(this.#onWatchlistClick);
-    this.#movieCardComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
-    this.#movieCardComp.setAddToFavoriteHandler(this.#onAddToFavorite);
-
-    this.#moviePopupComp.setAddToWatchlistHandler(this.#onWatchlistClick);
-    this.#moviePopupComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
-    this.#moviePopupComp.setAddToFavoriteHandler(this.#onAddToFavorite);
+    this.#initMovieCardListeners();
+    this.#initPopupListeners();
 
     if (!prevMovieCardComp) {
       this.#renderMovie();
       return;
     }
-    console.log('RERENDER');
 
     replace(this.#movieCardComp, prevMovieCardComp);
     replace(this.#moviePopupComp, prevMoviePopupComp);
@@ -49,16 +41,49 @@ export class MoviePresenter {
     remove(prevMoviePopupComp);
   }
 
+  #initMovieCardListeners() {
+    this.#movieCardComp.setOpenPopupHandler(this.#onPopupShow);
+    this.#movieCardComp.setAddToWatchlistHandler(this.#onWatchlistClick);
+    this.#movieCardComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
+    this.#movieCardComp.setAddToFavoriteHandler(this.#onAddToFavorite);
+  }
+
+  #initPopupListeners() {
+    this.#moviePopupComp.setAddToWatchlistHandler(this.#onWatchlistClick);
+    this.#moviePopupComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
+    this.#moviePopupComp.setAddToFavoriteHandler(this.#onAddToFavorite);
+    this.#moviePopupComp.setClosePopupHandler(this.#onPopupClose);
+  }
+
   #renderMovie() {
     render(this.#movieCardComp, this.#movieContainer.element);
   }
 
   #onPopupShow = () => {
-    this.#moviePopupComp.showPopup();
+    if (!MoviePopupView.isShow) {
+      document.body.append(this.#moviePopupComp.element);
+      document.body.classList.toggle('hide-overflow');
+      document.addEventListener('keydown', this.#onEscKeydown);
+      this.#initPopupListeners();
+      MoviePopupView.isShow = true;
+    }
   };
 
+  #onPopupClose = () => {
+    document.removeEventListener('keydown', this.#onEscKeydown);
+    document.body.classList.remove('hide-overflow');
+    this.#moviePopupComp.removeElement();
+    MoviePopupView.isShow = false;
+  }
+
+  #onEscKeydown = (evt) => {
+    evt.preventDefault();
+    if (evt.code === 'Escape') {
+      this.#onPopupClose();
+    }
+  }
+
   #onWatchlistClick = () => {
-    console.log('EVENT WatchlistClick');
     const userDetails = {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist };
     this.#changeMovie({...this.#movie, userDetails});
   };

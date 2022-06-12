@@ -134,16 +134,14 @@ const createPopupTemplate = (movie) => {
 };
 
 export default class MoviePopupView extends AbstractView {
-  static #isShow = false;
+  static isShow = false;
   #movie = null;
   #comments = null;
 
   constructor(movie, comments) {
-    console.log('create Popup');
     super();
     this.#movie = movie;
     this.#comments = comments;
-    this.#initEventListeners();
   }
 
   get template() {
@@ -162,15 +160,6 @@ export default class MoviePopupView extends AbstractView {
       comments,
       userDetailsButtons,
     });
-  }
-
-  showPopup() {
-    if (!MoviePopupView.#isShow) {
-      document.body.append(this.element);
-      document.body.classList.toggle('hide-overflow');
-      this.#initEventListeners();
-      MoviePopupView.#isShow = true;
-    }
   }
 
   /**
@@ -217,13 +206,7 @@ export default class MoviePopupView extends AbstractView {
     }).join('');
   }
 
-  #initEventListeners() {
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopup);
-    document.addEventListener('keydown', this.#onEscKeydown);
-  }
-
   setAddToWatchlistHandler = (callback) => {
-    console.log('setWatchlist');
     this._callback.addToWatchlist = callback;
     this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#addToWatchListHandler);
   };
@@ -237,6 +220,12 @@ export default class MoviePopupView extends AbstractView {
     this._callback.addToFavorite = callback;
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#addToFavoriteHandler);
   };
+
+  setClosePopupHandler = (callback) => {
+    this._callback.closePopup = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopup);
+  };
+
 
   #addToWatchListHandler = (evt) => {
     evt.preventDefault();
@@ -253,20 +242,12 @@ export default class MoviePopupView extends AbstractView {
     this._callback.addToFavorite();
   };
 
-  #onEscKeydown = (event) => {
-    if (event.code === 'Escape') {
-      this.#closePopup();
-    }
+  #closePopup = (evt) => {
+    evt.preventDefault();
+    this._callback.closePopup();
   };
 
-  #closePopup = () => {
-    document.body.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this.#onEscKeydown);
-    this.#removeElement();
-    MoviePopupView.#isShow = false;
-  };
-
-  #removeElement() {
+  removeElement() {
     this.element.remove();
     super.removeElement();
   }
