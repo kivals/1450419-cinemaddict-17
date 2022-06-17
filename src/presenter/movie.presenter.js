@@ -1,33 +1,100 @@
-import MovieContainerView from '../view/movie/movie-container.view';
-import { render } from '../framework/render';
-import { MovieEmptyListView } from '../view/movie/movie-empty-list.view';
-import { MovieListView } from '../view/movie/movie-list.view';
+import MovieCardView from '../view/movie/movie-card.view';
+import {remove, render, replace} from '../framework/render';
+import MoviePopupView from '../view/movie/movie-popup.view';
 
-export default class MoviePresenter {
-  #movieContainerComp = new MovieContainerView();
-  #moviesWrapperHtml = null;
-  #movieModel = null;
-  #movieList = [];
+export class MoviePresenter {
+  #movieContainer = null;
+  #movie = null;
+  #comments = null;
 
-  constructor(moviesWrapperHtml, movieModel) {
-    this.#moviesWrapperHtml = moviesWrapperHtml;
-    this.#movieModel = movieModel;
+  #movieCardComp = null;
+  #moviePopupComp = null;
+
+  #changeMovie = null;
+
+  constructor(movieContainer, changeMovie) {
+    this.#movieContainer = movieContainer;
+    this.#changeMovie = changeMovie;
   }
 
-  init() {
-    this.#movieList = [...this.#movieModel.getMovies()];
-    this.#renderMovieContainer();
+  init(movie, comments) {
+    this.#movie = movie;
+    this.#comments = comments;
+
+    const prevMovieCardComp = this.#movieCardComp;
+    const prevMoviePopupComp = this.#moviePopupComp;
+
+    this.#movieCardComp = new MovieCardView(movie);
+    this.#moviePopupComp = new MoviePopupView(movie, comments);
+
+    this.#initMovieCardListeners();
+    this.#initPopupListeners();
+
+    if (!prevMovieCardComp) {
+      this.#renderMovie();
+      return;
+    }
+
+    replace(this.#movieCardComp, prevMovieCardComp);
+    replace(this.#moviePopupComp, prevMoviePopupComp);
+    remove(prevMovieCardComp);
+    remove(prevMoviePopupComp);
   }
 
-  #renderMovieContainer() {
-    const moviesData = this.#movieList.map((movie) => ({
-      ...movie,
-      comments: this.#movieModel.getMovieComments(movie.comments)
-    }));
-    const movieListComp = !moviesData.length ?
-      new MovieEmptyListView() : new MovieListView(moviesData);
-
-    render(this.#movieContainerComp, this.#moviesWrapperHtml);
-    render(movieListComp, this.#movieContainerComp.element);
+  #initMovieCardListeners() {
+    this.#movieCardComp.setOpenPopupHandler(this.#onPopupShow);
+    this.#movieCardComp.setAddToWatchlistHandler(this.#onWatchlistClick);
+    this.#movieCardComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
+    this.#movieCardComp.setAddToFavoriteHandler(this.#onAddToFavorite);
   }
+
+  #initPopupListeners() {
+    this.#moviePopupComp.setAddToWatchlistHandler(this.#onWatchlistClick);
+    this.#moviePopupComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
+    this.#moviePopupComp.setAddToFavoriteHandler(this.#onAddToFavorite);
+    this.#moviePopupComp.setClosePopupHandler(this.#onPopupClose);
+  }
+
+  #renderMovie() {
+    render(this.#movieCardComp, this.#movieContainer.element);
+  }
+
+  #onPopupShow = () => {
+    if (!MoviePopupView.isShow) {
+      document.body.append(this.#moviePopupComp.element);
+      document.body.classList.toggle('hide-overflow');
+      document.addEventListener('keydown', this.#onEscKeydown);
+      this.#initPopupListeners();
+      MoviePopupView.isShow = true;
+    }
+  };
+
+  #onPopupClose = () => {
+    document.removeEventListener('keydown', this.#onEscKeydown);
+    document.body.classList.remove('hide-overflow');
+    this.#moviePopupComp.removeElement();
+    MoviePopupView.isShow = false;
+  };
+
+  #onEscKeydown = (evt) => {
+    evt.preventDefault();
+    if (evt.code === 'Escape') {
+      this.#onPopupClose();
+    }
+  };
+
+  #onWatchlistClick = () => {
+    const userDetails = {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist };
+    this.#changeMovie({...this.#movie, userDetails});
+  };
+
+  #onAlreadyWatched = () => {
+    const userDetails = {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched };
+    this.#changeMovie({...this.#movie, userDetails});
+  };
+
+  #onAddToFavorite = () => {
+    const userDetails = {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite };
+    this.#changeMovie({...this.#movie, userDetails});
+  };
 }

@@ -6,6 +6,8 @@ export const getRandomInteger = (min = 0, max = 1, interval = 1) => {
   return interval < 1 ? result.toFixed(1) : result;
 };
 
+export const getRandomBoolean = () => Math.random() < .5;
+
 export const humanizeDate = (date, format) => (dayjs(date).format(format));
 
 export const getRandomValueFromArray = (array = []) => {
@@ -26,3 +28,17 @@ export const convertMinutesToHours = (minutes) => {
 };
 
 export const toUpperCaseFirstLetter = (string) => string[0].toUpperCase() + string.slice(1);
+
+export const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
