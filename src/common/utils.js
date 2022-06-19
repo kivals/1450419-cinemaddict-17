@@ -44,42 +44,11 @@ export const updateItem = (items, update) => {
   ];
 };
 
-export const getWeightForNullDate = (dateA, dateB) => {
-  if (dateA === null && dateB === null) {
-    return 0;
-  }
+export const sortByDate = (direction) => (movieA, movieB) => direction === SortDirection.UP ?
+  dayjs(movieA.release.date).diff(dayjs(movieB.release.date)) :
+  dayjs(movieB.release.date).diff(dayjs(movieA.release.date));
 
-  if (dateA === null) {
-    return 1;
-  }
+export const sortByRating = (direction) => (movieA, movieB) => direction === SortDirection.UP ?
+  movieA.totalRating - movieB.totalRating :
+  movieB.totalRating - movieA.totalRating;
 
-  if (dateB === null) {
-    return -1;
-  }
-
-  return null;
-};
-
-export const sortByDate = (direction) => (movieA, movieB) => {
-  return direction === SortDirection.UP ?
-    dayjs(movieA.release.date).diff(dayjs(movieB.release.date)) :
-    dayjs(movieB.release.date).diff(dayjs(movieA.release.date));
-};
-
-export const sortByRating = (direction) => (movieA, movieB) => {
-  return direction === SortDirection.UP ?
-    movieA.totalRating - movieB.totalRating :
-    movieB.totalRating - movieA.totalRating;
-};
-
-/*export const sortMovieUp = (movieA, movieB) => {
-  const weight = getWeightForNullDate(movieA.runtime, movieB.runtime);
-
-  return weight ?? dayjs(movieA.runtime).diff(dayjs(movieB.runtime));
-};*/
-
-/*const sortTaskDown = (movieA, movieB) => {
-  const weight = getWeightForNullDate(movieA.runtime, movieB.runtime);
-
-  return weight ?? dayjs(movieB.runtime).diff(dayjs(movieA.runtime));
-};*/
