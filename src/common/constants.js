@@ -2,4 +2,13 @@ export const SMILES = ['smile', 'sleeping', 'puke', 'angry'];
 
 export const navigationTypes = ['watchlist', 'history', 'favorites'];
 
-export const sortTypes = ['Sort by default', 'Sort by date', 'Sort by rating'];
+export const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
+export const SortDirection = {
+  UP: 'up',
+  DOWN: 'down',
+};

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {SortDirection} from './constants';
 
 export const getRandomInteger = (min = 0, max = 1, interval = 1) => {
   const r = Math.floor(Math.random() * (max - min + interval) / interval);
@@ -42,3 +43,43 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+export const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+export const sortByDate = (direction) => (movieA, movieB) => {
+  return direction === SortDirection.UP ?
+    dayjs(movieA.release.date).diff(dayjs(movieB.release.date)) :
+    dayjs(movieB.release.date).diff(dayjs(movieA.release.date));
+};
+
+export const sortByRating = (direction) => (movieA, movieB) => {
+  return direction === SortDirection.UP ?
+    movieA.totalRating - movieB.totalRating :
+    movieB.totalRating - movieA.totalRating;
+};
+
+/*export const sortMovieUp = (movieA, movieB) => {
+  const weight = getWeightForNullDate(movieA.runtime, movieB.runtime);
+
+  return weight ?? dayjs(movieA.runtime).diff(dayjs(movieB.runtime));
+};*/
+
+/*const sortTaskDown = (movieA, movieB) => {
+  const weight = getWeightForNullDate(movieA.runtime, movieB.runtime);
+
+  return weight ?? dayjs(movieB.runtime).diff(dayjs(movieA.runtime));
+};*/
