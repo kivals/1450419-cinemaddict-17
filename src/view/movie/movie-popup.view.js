@@ -258,7 +258,6 @@ export default class MoviePopupView extends AbstractStatefulView {
   #addToWatchListHandler = (evt) => {
     evt.preventDefault();
     this._callback.addToWatchlist();
-    this.element.scrollTop = 550;
   };
 
   #alreadyWatchedHandler = (evt) => {
