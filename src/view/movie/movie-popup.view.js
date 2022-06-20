@@ -1,7 +1,6 @@
 import { convertMinutesToHours, humanizeDate } from '../../common/utils';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import {SMILES} from '../../common/constants';
-import {createElement, render} from '../../framework/render';
 
 const createPopupTemplate = (movie) => {
   const {
