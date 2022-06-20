@@ -4,6 +4,7 @@ import {
   getRandomValueFromArray
 } from '../common/utils';
 import {nanoid} from 'nanoid';
+import dayjs from 'dayjs';
 
 const posters = [
   'made-for-each-other.png',
@@ -15,9 +16,16 @@ const posters = [
   'the-man-with-the-golden-arm.jpg',
 ];
 
+const MAX_DAYS_GAP = 150;
+
 const generateRuntime = () => getRandomInteger(10, 380);
 const generateTotalRating = () => getRandomInteger(1, 10, 0.1);
 const generatePoster = () => (`images/posters/${getRandomValueFromArray(posters)}`);
+const generateDate = () => {
+  const daysGap = getRandomInteger(-MAX_DAYS_GAP, MAX_DAYS_GAP);
+
+  return dayjs().add(daysGap, 'day').toDate();
+};
 
 export const generateMovie = () => ({
   id: nanoid(),
@@ -30,7 +38,7 @@ export const generateMovie = () => ({
   writers: ['Takeshi Kitano'],
   actors: ['Morgan Freeman'],
   release: {
-    date: '2019-05-11T00:00:00.000Z',
+    date: generateDate(),
     releaseCountry: 'Finland'
   },
   runtime: generateRuntime(),

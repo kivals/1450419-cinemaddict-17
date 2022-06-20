@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {SortDirection} from './constants';
 
 export const getRandomInteger = (min = 0, max = 1, interval = 1) => {
   const r = Math.floor(Math.random() * (max - min + interval) / interval);
@@ -42,3 +43,12 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+export const sortByDate = (direction) => (movieA, movieB) => direction === SortDirection.UP ?
+  dayjs(movieA.release.date).diff(dayjs(movieB.release.date)) :
+  dayjs(movieB.release.date).diff(dayjs(movieA.release.date));
+
+export const sortByRating = (direction) => (movieA, movieB) => direction === SortDirection.UP ?
+  movieA.totalRating - movieB.totalRating :
+  movieB.totalRating - movieA.totalRating;
+

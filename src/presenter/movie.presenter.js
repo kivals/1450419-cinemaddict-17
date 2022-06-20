@@ -97,4 +97,9 @@ export class MoviePresenter {
     const userDetails = {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite };
     this.#changeMovie({...this.#movie, userDetails});
   };
+
+  destroy = () => {
+    remove(this.#movieCardComp);
+    remove(this.#moviePopupComp);
+  };
 }
