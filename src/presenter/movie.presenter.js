@@ -72,7 +72,7 @@ export class MoviePresenter {
   #onPopupClose = () => {
     document.removeEventListener('keydown', this.#onEscKeydown);
     document.body.classList.remove('hide-overflow');
-    this.#moviePopupComp.removeElement();
+    this.#moviePopupComp.destroyComponent();
     MoviePopupView.isShow = false;
   };
 
