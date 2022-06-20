@@ -16,12 +16,13 @@ const posters = [
   'the-man-with-the-golden-arm.jpg',
 ];
 
+const MAX_DAYS_GAP = 150;
+
 const generateRuntime = () => getRandomInteger(10, 380);
 const generateTotalRating = () => getRandomInteger(1, 10, 0.1);
 const generatePoster = () => (`images/posters/${getRandomValueFromArray(posters)}`);
 const generateDate = () => {
-  const maxDaysGap = 150;
-  const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
+  const daysGap = getRandomInteger(-MAX_DAYS_GAP, MAX_DAYS_GAP);
 
   return dayjs().add(daysGap, 'day').toDate();
 };
