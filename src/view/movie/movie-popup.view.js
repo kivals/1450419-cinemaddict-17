@@ -121,13 +121,11 @@ const createPopupTemplate = (movie) => {
 
 export default class MoviePopupView extends AbstractStatefulView {
   static isShow = false;
-  #comments = null;
   #scrollPosition = 0;
 
   constructor(movie, comments) {
     super();
-    this._state = MoviePopupView.parseMovieToState(movie);
-    this.#comments = comments;
+    this._state = MoviePopupView.parseMovieToState({...movie, comments});
 
     this.#setInnerHandlers();
   }
@@ -186,8 +184,8 @@ export default class MoviePopupView extends AbstractStatefulView {
    * @returns разметка с комментариями
    */
   #getCommentsTemplate() {
-    return this.#comments.map((comment) => {
-      const commentDate = humanizeDate(comment.date, 'YYYY/MM/DD');
+    return this._state.comments.map((comment) => {
+      const commentDate = humanizeDate(comment.date, 'YYYY/MM/DD hh:mm');
       const emojiTemplate = this.#getEmojiImgTemplate(comment.emotion);
       return `
       <li class="film-details__comment">
