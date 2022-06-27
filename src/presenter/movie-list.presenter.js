@@ -85,10 +85,6 @@ export default class MovieListPresenter {
         this.#moviePresenterMap.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        debugger;
-        if (MoviePopupView.isShow) {
-          this.#openedPopupId = data.id;
-        }
         this.#clearMovieList();
         this.#renderMovieList();
         break;
@@ -135,7 +131,7 @@ export default class MovieListPresenter {
 
   #renderMovie(movie) {
     const comments = this.#commentsModel.getCommentsByMovie(movie.id);/*this.#movieModel.getMovieComments(movie.comments);*/
-    const isOpenPopup = this.#openedPopupId === movie.id;
+    const isOpenPopup = MoviePopupView.openedPopupId === movie.id;
     const moviePresenter = new MoviePresenter(this.#moviesListContainerComp, this.#handleViewAction);
     moviePresenter.init(movie, comments, isOpenPopup);
     this.#moviePresenterMap.set(movie.id, moviePresenter);
@@ -185,7 +181,6 @@ export default class MovieListPresenter {
 
     this.#moviePresenterMap.forEach((presenter) => presenter.destroy());
     this.#moviePresenterMap.clear();
-    MoviePopupView.isShow = false;
     // remove(this.#sortComp);
     remove(this.#showMoreButtonComp);
     if (this.#noMoviesComp) {

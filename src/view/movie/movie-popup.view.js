@@ -121,7 +121,7 @@ const createPopupTemplate = (movie) => {
 };
 
 export default class MoviePopupView extends AbstractStatefulView {
-  static isShow = false;
+  static openedPopupId = null;
   #scrollPosition = 0;
 
   constructor(movie, comments) {

@@ -31,11 +31,11 @@ export class MoviePresenter {
 
     this.#initMovieCardListeners();
     this.#initPopupListeners();
-
+    console.log(prevMovieCardComp);
     if (!prevMovieCardComp) {
       this.#renderMovie();
       if (openPopup) {
-        this.#onPopupShow();
+        this.#openPopup();
       }
       return;
     }
@@ -47,7 +47,7 @@ export class MoviePresenter {
   }
 
   #initMovieCardListeners() {
-    this.#movieCardComp.setOpenPopupHandler(this.#onPopupShow);
+    this.#movieCardComp.setOpenPopupHandler(this.#openPopup);
     this.#movieCardComp.setAddToWatchlistHandler(this.#onWatchlistClick);
     this.#movieCardComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
     this.#movieCardComp.setAddToFavoriteHandler(this.#onAddToFavorite);
@@ -65,14 +65,8 @@ export class MoviePresenter {
     render(this.#movieCardComp, this.#movieContainer.element);
   }
 
-  #onPopupShow = () => {
-    if (!MoviePopupView.isShow) {
-      this.#openPopup();
-      MoviePopupView.isShow = true;
-    }
-  };
-
-  #openPopup() {
+  #openPopup = () => {
+    MoviePopupView.openedPopupId = this.#movie.id;
     document.body.append(this.#moviePopupComp.element);
     document.body.classList.toggle('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeydown);
@@ -80,10 +74,10 @@ export class MoviePresenter {
   }
 
   #onPopupClose = () => {
+    MoviePopupView.openedPopupId = null;
     document.removeEventListener('keydown', this.#onEscKeydown);
     document.body.classList.remove('hide-overflow');
     this.#moviePopupComp.destroyComponent();
-    MoviePopupView.isShow = false;
   };
 
   #onEscKeydown = (evt) => {

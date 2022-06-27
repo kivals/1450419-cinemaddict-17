@@ -1,5 +1,6 @@
 import {convertMinutesToHours, humanizeDate} from '../../common/utils';
 import AbstractView from '../../framework/view/abstract-view';
+import MoviePopupView from "./movie-popup.view";
 
 export const USER_ACTIONS = {
   WATCHLIST: 'watchlist',
