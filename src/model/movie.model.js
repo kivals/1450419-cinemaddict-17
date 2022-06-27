@@ -1,55 +1,26 @@
 import { generateMovie } from '../mock/movie.mock';
-import {getRandomInteger} from '../common/utils';
+import Observable from '../framework/observable';
 
-export default class MovieModel {
-  #commentModel;
-  #movies = [];
+export default class MovieModel extends Observable {
+  #movies = Array.from({length: 1}, generateMovie);
 
-  constructor(commentModel) {
-    this.#commentModel = commentModel;
-    this.#movies = this.#mergeMoviesAndComments();
-  }
-
-  /**
-   * Получить набор комментариев для фильма
-   * @param commentsIds идентификаторы комментариев
-   * @returns список объектов-комментарии
-   */
-  getMovieComments(commentsIds = []) {
-    return this.#commentModel.getComments().filter((comment) => commentsIds.indexOf(comment.id) !== -1);
-  }
-
-  getMovies() {
+  get movies() {
     return this.#movies;
   }
 
-  /**
-   * Mock-метод объединяющий сущности Комментарии и Фильмы
-   * @returns объект, описывающий фильм с набором комметариев в виде id
-   */
-  #mergeMoviesAndComments() {
-    const movies = Array.from({length: 12}, generateMovie);
-    const comments = [...this.#commentModel.getComments()];
+  updateMovie(updateType, update) {
+    const index = this.#movies.findIndex((task) => task.id === update.id);
 
-    return movies.map((movie) => {
-      const movieCommentsIds = [];
+    if (index === -1) {
+      throw new Error('Can\'t update unexciting movie');
+    }
 
-      if (comments.length !== 0) {
-        const countComments = getRandomInteger(0, 10);
+    this.#movies = [
+      ...this.#movies.slice(0, index),
+      update,
+      ...this.#movies.slice(index + 1),
+    ];
 
-        for (let i = 0; i < countComments; i++) {
-          const ranIndex = getRandomInteger(0, comments.length - 1);
-          movieCommentsIds.push(comments[ranIndex].id);
-
-          comments.splice(ranIndex, 1);
-
-          if (comments.length === 0) { break; }
-        }
-      }
-      return {
-        ...movie,
-        comments: movieCommentsIds
-      };
-    });
+    this._notify(updateType, update);
   }
 }

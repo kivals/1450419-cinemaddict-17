@@ -1,6 +1,8 @@
 import MovieCardView from '../view/movie/movie-card.view';
 import {remove, render, replace} from '../framework/render';
 import MoviePopupView from '../view/movie/movie-popup.view';
+import {UpdateType, UserAction} from '../common/constants';
+import {nanoid} from "nanoid";
 
 export class MoviePresenter {
   #movieContainer = null;
@@ -17,7 +19,7 @@ export class MoviePresenter {
     this.#changeMovie = changeMovie;
   }
 
-  init(movie, comments) {
+  init(movie, comments, openPopup = false) {
     this.#movie = movie;
     this.#comments = comments;
 
@@ -32,6 +34,9 @@ export class MoviePresenter {
 
     if (!prevMovieCardComp) {
       this.#renderMovie();
+      if (openPopup) {
+        this.#onPopupShow();
+      }
       return;
     }
 
@@ -53,6 +58,7 @@ export class MoviePresenter {
     this.#moviePopupComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
     this.#moviePopupComp.setAddToFavoriteHandler(this.#onAddToFavorite);
     this.#moviePopupComp.setClosePopupHandler(this.#onPopupClose);
+    this.#moviePopupComp.setAddCommentHandler(this.#onAddComment);
   }
 
   #renderMovie() {
@@ -61,13 +67,17 @@ export class MoviePresenter {
 
   #onPopupShow = () => {
     if (!MoviePopupView.isShow) {
-      document.body.append(this.#moviePopupComp.element);
-      document.body.classList.toggle('hide-overflow');
-      document.addEventListener('keydown', this.#onEscKeydown);
-      this.#initPopupListeners();
+      this.#openPopup();
       MoviePopupView.isShow = true;
     }
   };
+
+  #openPopup() {
+    document.body.append(this.#moviePopupComp.element);
+    document.body.classList.toggle('hide-overflow');
+    document.addEventListener('keydown', this.#onEscKeydown);
+    this.#initPopupListeners();
+  }
 
   #onPopupClose = () => {
     document.removeEventListener('keydown', this.#onEscKeydown);
@@ -77,7 +87,6 @@ export class MoviePresenter {
   };
 
   #onEscKeydown = (evt) => {
-    evt.preventDefault();
     if (evt.code === 'Escape') {
       this.#onPopupClose();
     }
@@ -85,17 +94,36 @@ export class MoviePresenter {
 
   #onWatchlistClick = () => {
     const userDetails = {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist };
-    this.#changeMovie({...this.#movie, userDetails});
+    this.#changeMovie(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, userDetails});
   };
 
   #onAlreadyWatched = () => {
     const userDetails = {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched };
-    this.#changeMovie({...this.#movie, userDetails});
+    this.#changeMovie(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, userDetails}
+    );
   };
 
   #onAddToFavorite = () => {
     const userDetails = {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite };
-    this.#changeMovie({...this.#movie, userDetails});
+    this.#changeMovie(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, userDetails}
+    );
+  };
+
+  #onAddComment = (comment) => {
+    this.#changeMovie(
+      UserAction.ADD_COMMENT,
+      UpdateType.MINOR,
+      {id: nanoid(), ...comment}
+    );
   };
 
   destroy = () => {

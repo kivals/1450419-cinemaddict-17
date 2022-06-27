@@ -1,23 +1,22 @@
 import ProfileView from './view/profile.view';
 import { render } from './framework/render';
-import NavigationView from './view/navigation.view';
 import MovieListPresenter from './presenter/movie-list.presenter';
 import MovieModel from './model/movie.model';
 import CommentModel from './model/comment.model';
-import {generateNavList} from './mock/navigation';
+import FilterModel from './model/filter.model';
+import FilterPresenter from './presenter/filter.presenter';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
-const navList = generateNavList();
+const moviesModel = new MovieModel();
+const commentModel = new CommentModel(moviesModel);
+const filterModel = new FilterModel();
 
-const commentModel = new CommentModel();
-const moviesModel = new MovieModel(commentModel);
-
-const moviePresenter = new MovieListPresenter(siteMainElement, moviesModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, moviesModel, commentModel, filterModel);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel);
 
 render(new ProfileView(), siteHeaderElement);
 
-render(new NavigationView(navList), siteMainElement);
-
-moviePresenter.init();
+movieListPresenter.init();
+filterPresenter.init();

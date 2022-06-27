@@ -19,6 +19,7 @@ const createPopupTemplate = (movie) => {
     userDetailsButtonsTemplate,
     emojiTemplate,
     chosenEmojiTemplate,
+    commentsCount,
   } = movie;
 
   return `
@@ -93,7 +94,7 @@ const createPopupTemplate = (movie) => {
 
           <div class="film-details__bottom-container">
             <section class="film-details__comments-wrap">
-              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
+              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
 
               <ul class="film-details__comments-list">
                 ${commentsTemplate}
@@ -151,9 +152,11 @@ export default class MoviePopupView extends AbstractStatefulView {
     const releaseDate = movie.release.date ? humanizeDate(movie.release.date, 'DD MMMM YYYY') : '';
     const duration = convertMinutesToHours(Number(movie.runtime));
     const userEmoji = '';
+    const commentsCount = movie.comments.length;
 
     return {
       ...movie,
+      commentsCount,
       releaseDate,
       duration,
       userEmoji,
@@ -222,7 +225,7 @@ export default class MoviePopupView extends AbstractStatefulView {
   }
 
   #getEmojiImgTemplate(emoji) {
-    return emoji ? `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : '';
+    return emoji ? `<img src="./images/emoji/${emoji}.png" data-emoji="${emoji}" width="55" height="55" alt="emoji-${emoji}">` : '';
   }
 
   setAddToWatchlistHandler = (callback) => {
@@ -245,12 +248,18 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closePopupHandler);
   };
 
+  setAddCommentHandler = (callback) => {
+    this._callback.addComment = callback;
+    this.element.querySelector('.film-details__comment-input').addEventListener('keypress', this.#addCommentHandler);
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setAddToWatchlistHandler(this._callback.addToWatchlist);
     this.setAlreadyWatchedHandler(this._callback.alreadyWatched);
     this.setAddToFavoriteHandler(this._callback.addToFavorite);
     this.setClosePopupHandler(this._callback.closePopup);
+    this.setAddCommentHandler(this._callback.addComment);
   };
 
   #addToWatchListHandler = (evt) => {
@@ -286,6 +295,23 @@ export default class MoviePopupView extends AbstractStatefulView {
 
     // Восстанавливаем положение скролла
     this.element.scrollTop = this.#scrollPosition;
+  };
+
+  #addCommentHandler = (evt) => {
+    if ((evt.keyCode === 10 || evt.keyCode === 13) && evt.ctrlKey) {
+      const emotion = this.element.querySelector('.film-details__add-emoji-label > img')?.dataset.emoji;
+      const comment = evt.target.value;
+
+      if (emotion && comment) {
+        this._callback.addComment({
+          author: 'Новый автор',
+          comment,
+          emotion,
+          filmId: this._state.id,
+        });
+      }
+    }
+    //
   };
 
   destroyComponent() {
