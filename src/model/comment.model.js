@@ -17,14 +17,11 @@ export default class CommentModel extends Observable {
   }
 
   addComment(updateType, comment) {
-    console.log("model");
-    console.log(updateType);
-    console.log(comment);
     this.#comments.push(comment);
     this._notify(updateType, comment);
   }
 
-  deleteComment(update) {
+  deleteComment(updateType, update) {
     const index = this.#comments.findIndex((comment) => comment.id === update.id);
 
     if (index === -1) {

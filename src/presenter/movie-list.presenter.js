@@ -132,7 +132,7 @@ export default class MovieListPresenter {
   #renderMovie(movie) {
     const comments = this.#commentsModel.getCommentsByMovie(movie.id);/*this.#movieModel.getMovieComments(movie.comments);*/
     const isOpenPopup = MoviePopupView.openedPopupId === movie.id;
-    const moviePresenter = new MoviePresenter(this.#moviesListContainerComp, this.#handleViewAction);
+    const moviePresenter = new MoviePresenter(this.#moviesListContainerComp, this.#handleViewAction, this.#commentsModel);
     moviePresenter.init(movie, comments, isOpenPopup);
     this.#moviePresenterMap.set(movie.id, moviePresenter);
   }

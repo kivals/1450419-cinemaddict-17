@@ -2,7 +2,8 @@ import MovieCardView from '../view/movie/movie-card.view';
 import {remove, render, replace} from '../framework/render';
 import MoviePopupView from '../view/movie/movie-popup.view';
 import {UpdateType, UserAction} from '../common/constants';
-import {nanoid} from "nanoid";
+import {CommentsPresenter} from './comments.presenter';
+import {CommentsContainerView} from '../view/comment/comments-container.view';
 
 export class MoviePresenter {
   #movieContainer = null;
@@ -11,7 +12,7 @@ export class MoviePresenter {
 
   #movieCardComp = null;
   #moviePopupComp = null;
-
+  #commentsContainerComp = null;
   #changeMovie = null;
 
   constructor(movieContainer, changeMovie) {
@@ -31,7 +32,6 @@ export class MoviePresenter {
 
     this.#initMovieCardListeners();
     this.#initPopupListeners();
-    console.log(prevMovieCardComp);
     if (!prevMovieCardComp) {
       this.#renderMovie();
       if (openPopup) {
@@ -58,11 +58,17 @@ export class MoviePresenter {
     this.#moviePopupComp.setAlreadyWatchedHandler(this.#onAlreadyWatched);
     this.#moviePopupComp.setAddToFavoriteHandler(this.#onAddToFavorite);
     this.#moviePopupComp.setClosePopupHandler(this.#onPopupClose);
-    this.#moviePopupComp.setAddCommentHandler(this.#onAddComment);
   }
 
   #renderMovie() {
     render(this.#movieCardComp, this.#movieContainer.element);
+  }
+
+  #renderComments(comments) {
+    this.#commentsContainerComp = new CommentsContainerView();
+    render(this.#commentsContainerComp, this.#moviePopupComp.element.querySelector('.film-details__bottom-container'));
+    const commentsPresenter = new CommentsPresenter(this.#commentsContainerComp, this.#changeMovie);
+    commentsPresenter.init(comments, this.#movie.id);
   }
 
   #openPopup = () => {
@@ -71,7 +77,9 @@ export class MoviePresenter {
     document.body.classList.toggle('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeydown);
     this.#initPopupListeners();
-  }
+
+    this.#renderComments(this.#comments);
+  };
 
   #onPopupClose = () => {
     MoviePopupView.openedPopupId = null;
@@ -109,14 +117,6 @@ export class MoviePresenter {
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {...this.#movie, userDetails}
-    );
-  };
-
-  #onAddComment = (comment) => {
-    this.#changeMovie(
-      UserAction.ADD_COMMENT,
-      UpdateType.MINOR,
-      {id: nanoid(), ...comment}
     );
   };
 
