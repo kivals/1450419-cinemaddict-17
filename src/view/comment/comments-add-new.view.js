@@ -1,5 +1,6 @@
 import AbstractView from '../../framework/view/abstract-view';
 import {SMILES} from '../../common/constants';
+import he from 'he';
 
 const createComponentTemplate = (emojiTemplate, chosenEmoji, text = '') => `
     <div class="film-details__new-comment">
@@ -11,7 +12,7 @@ const createComponentTemplate = (emojiTemplate, chosenEmoji, text = '') => `
         <textarea
             class="film-details__comment-input"
             placeholder="Select reaction below and write comment here"
-            name="comment">${text}</textarea>
+            name="comment">${he.encode(text)}</textarea>
       </label>
 
       <div class="film-details__emoji-list">

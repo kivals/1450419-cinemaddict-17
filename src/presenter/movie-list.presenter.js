@@ -9,7 +9,7 @@ import {sortByDate, sortByRating} from '../common/utils';
 import {FilterType, SortDirection, SortType, UpdateType, UserAction} from '../common/constants';
 import MoviePopupView from '../view/movie/movie-popup.view';
 import {filter} from '../common/filter';
-import {MovieEmptyListView} from "../view/movie/movie-empty-list.view";
+import {MovieEmptyListView} from '../view/movie/movie-empty-list.view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 

@@ -1,6 +1,5 @@
 import {convertMinutesToHours, humanizeDate} from '../../common/utils';
 import AbstractView from '../../framework/view/abstract-view';
-import MoviePopupView from "./movie-popup.view";
 
 export const USER_ACTIONS = {
   WATCHLIST: 'watchlist',
@@ -9,7 +8,7 @@ export const USER_ACTIONS = {
 };
 
 const createCardTemplate = (movie) => {
-  const { title, totalRating, release, poster, genre, runtime, description, comments, userDetails } = movie;
+  const { title, totalRating, release, poster, genre, runtime, description, userDetails } = movie;
 
   const releaseYear = release.date ?
     humanizeDate(movie.release.date, 'YYYY') : '';

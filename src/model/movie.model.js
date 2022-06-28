@@ -2,7 +2,7 @@ import { generateMovie } from '../mock/movie.mock';
 import Observable from '../framework/observable';
 
 export default class MovieModel extends Observable {
-  #movies = Array.from({length: 1}, generateMovie);
+  #movies = Array.from({length: 11}, generateMovie);
 
   get movies() {
     return this.#movies;

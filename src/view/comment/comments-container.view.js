@@ -1,4 +1,4 @@
-import AbstractView from "../../framework/view/abstract-view";
+import AbstractView from '../../framework/view/abstract-view';
 const createContainerTemplate = () => `
     <section class="film-details__comments-wrap"></section>
  `;
