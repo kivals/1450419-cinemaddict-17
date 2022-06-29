@@ -10,6 +10,7 @@ import {FilterType, SortDirection, SortType, UpdateType, UserAction} from '../co
 import MoviePopupView from '../view/movie/movie-popup.view';
 import {filter} from '../common/filter';
 import {MovieEmptyListView} from '../view/movie/movie-empty-list.view';
+import LoadingView from '../view/loading.view';
 
 const MOVIE_COUNT_PER_STEP = 5;
 
@@ -27,12 +28,14 @@ export default class MovieListPresenter {
   #currentSortDirection = SortDirection.UP;
   #openedPopupId = null;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   #moviesComp = new MoviesView();
   #showMoreButtonComp = new MovieShowMoreBtnView();
   #movieListComp = new MovieListView();
   #moviesListContainerComp = new MoviesContainerView();
   #sortComp = new SortView();
+  #loadingComponent = new LoadingView();
   #noMoviesComp = null;
 
   constructor(moviesWrapperHtml, movieModel, commentsModel, filterModel) {
@@ -92,6 +95,11 @@ export default class MovieListPresenter {
         this.#clearMovieList();
         this.#renderMovieList({resetRenderedMovieCount: true, resetSortType: true});
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderMovieList();
+        break;
     }
   };
 
@@ -102,13 +110,22 @@ export default class MovieListPresenter {
   }
 
   #renderSort() {
-    render(this.#sortComp, this.#moviesComp.element);
-    this.#sortComp.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    if (this.movies) {
+      render(this.#sortComp, this.#mainHtml, RenderPosition.AFTERBEGIN);
+      this.#sortComp.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    }
   }
 
   #renderMovieList() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const movies = this.movies;
     const movieCount = movies.length;
+
+    console.log(movieCount);
 
     if (movieCount === 0) {
       this.#renderNoMovies();
@@ -117,6 +134,11 @@ export default class MovieListPresenter {
 
     render(this.#movieListComp, this.#moviesComp.element);
     render(this.#moviesListContainerComp, this.#movieListComp.element);
+
+
+    if (this.#noMoviesComp) {
+      remove(this.#noMoviesComp);
+    }
 
     this.#renderMovies(movies.slice(0, Math.min(movieCount, this.#renderedMovieCount)));
 
@@ -146,6 +168,10 @@ export default class MovieListPresenter {
     this.#noMoviesComp = new MovieEmptyListView(this.#filterType);
     render(this.#noMoviesComp, this.#movieListComp.element, RenderPosition.AFTERBEGIN);
   }
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#movieListComp.element, RenderPosition.AFTERBEGIN);
+  };
 
   #onClickShowMore = () => {
     this.movies
@@ -181,8 +207,10 @@ export default class MovieListPresenter {
 
     this.#moviePresenterMap.forEach((presenter) => presenter.destroy());
     this.#moviePresenterMap.clear();
-    // remove(this.#sortComp);
+
+    remove(this.#loadingComponent);
     remove(this.#showMoreButtonComp);
+
     if (this.#noMoviesComp) {
       remove(this.#noMoviesComp);
     }

@@ -8,7 +8,7 @@ export const USER_ACTIONS = {
 };
 
 const createCardTemplate = (movie) => {
-  const { title, totalRating, release, poster, genre, runtime, description, userDetails } = movie;
+  const { title, totalRating, release, poster, genre, runtime, description, userDetails, comments } = movie;
 
   const releaseYear = release.date ?
     humanizeDate(movie.release.date, 'YYYY') : '';
@@ -23,11 +23,11 @@ const createCardTemplate = (movie) => {
             <p class="film-card__info">
               <span class="film-card__year">${releaseYear}</span>
               <span class="film-card__duration">${duration}</span>
-              <span class="film-card__genre">${genre}</span>
+              <span class="film-card__genre">${genre.join(' ')}</span>
             </p>
             <img src="${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
-            <span class="film-card__comments">0 comments</span>
+            <span class="film-card__comments">${comments?.length || 0} comments</span>
           </a>
           <div class="film-card__controls">
             <button
